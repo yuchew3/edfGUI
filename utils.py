@@ -73,31 +73,23 @@ def find_bad(input_data):
     seconds = int(seconds)
     print seconds, ' seconds in total'
 
-    def check_bad(i):
+    outlier_points = np.abs(input_data.sigbuf) > 5
+
+    def check_bad(i, outlier_points):
         lo = int(i * input_data.frequency)
         hi = int(lo + input_data.frequency)
         if hi > input_data.length:
             hi = input_data.length
         labels = np.zeros(input_data.num_channels)
-
-        for j in xrange(input_data.num_channels):
-            count = 0
-            for a in xrange(lo, hi):
-                if abs(input_data.sigbuf[j, a]) > 5:
-                    count += 1
-            if count > 0.2 * input_data.frequency:
-                labels[j] = 1
-        
-        return labels
+	t_idx = np.arange(lo, hi)
+	return np.sum(outlier_points[:, t_idx], axis=1) > 0.2 * input_data.frequency
 
     y = np.zeros((seconds, input_data.num_channels))
     for i in xrange(seconds):
-        y[i, :] = check_bad(i)
-    
-    for aa in xrange(seconds):
-        if np.sum(y[aa]) != 0:
-            output_df.bad.append(aa)
-            output_df.labels.append(y[aa])
+        y[i, :] = check_bad(i, outlier_points)
+        if np.sum(y[i, :]) > 0:
+            output_df.bad.append(i)
+            output_df.labels.append(y[i, :])
 
     output_df.responses = -np.ones(len(output_df.bad))
     return output_df
@@ -156,6 +148,7 @@ def draw_selected(selected, input_data, output_df):
         height = (i*1.0 / (len(selected)+1)) * input_data.num_channels
         ax1.plot(X, height*10 + amp_scale * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)
+    	i += 1
     ax1.set_ylim(-10, (input_data.num_channels+1)*10)
     ax1.set_xlim(X[0], X[-1])
     for x in vlines:
