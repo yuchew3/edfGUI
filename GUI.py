@@ -23,8 +23,8 @@ class GUI:
 
         self.pre_frame = tk.Frame(self.master, bg='gray')
         self.info_frame = tk.Frame(self.master)
-        self.canvas = tk.Frame(self.master, bg='yellow')
-        self.tool_frame = tk.Frame(self.master, bg='red')
+        self.canvas = tk.Frame(self.master)
+        self.tool_frame = tk.Frame(self.master)
         self.channel_frame = tk.Frame(self.master)
         self.selected_canvas = tk.Frame(self.master)
         self.selected_toolbar = tk.Frame(self.master)
@@ -44,6 +44,8 @@ class GUI:
         self.canvas.grid_propagate(False)
         self.tool_frame.grid_propagate(False)
 	self.selected_canvas.grid_propagate(False)
+	self.selected_width = self.selected_canvas.winfo_width()+5
+	self.selected_height = self.selected_canvas.winfo_height()+5
 
         self.response = IntVar()
         self.response.set(0)
@@ -175,10 +177,10 @@ class GUI:
         fig = utils.draw_selected(selected, self.input_data, self.output_df)
         canvas2 = FigureCanvasTkAgg(fig, master=self.selected_canvas)
         c = canvas2.get_tk_widget()
-        width = self.selected_canvas.winfo_width()
-        height = self.selected_canvas.winfo_height()
+	print 'width = ', self.selected_width
+	print 'height = ', self.selected_height
         c.pack(side=tk.RIGHT, expand=True, fill=BOTH)
-        c.configure(width=width, height=height)
+        c.configure(width=self.selected_width, height=self.selected_height)
         toolbar = NavigationToolbar2TkAgg(canvas2, self.selected_toolbar)
         toolbar.update()
 
