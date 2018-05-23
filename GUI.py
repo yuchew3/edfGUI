@@ -29,17 +29,17 @@ class GUI:
         self.selected_canvas = tk.Frame(self.master)
         self.selected_toolbar = tk.Frame(self.master)
 
-        for r in range(17):
+        for r in range(19):
             self.master.rowconfigure(r, weight=1)    
         for c in range(10):
             self.master.columnconfigure(c, weight=1)
         self.pre_frame.grid(column=0, row=0, rowspan=5, sticky = W+E+N+S)
         self.info_frame.grid(column=0, row=5, rowspan=6, sticky = W+E+N+S)
-        self.channel_frame.grid(column=0, row=11, rowspan=6, sticky = W+E+N+S)
+        self.channel_frame.grid(column=0, row=11, rowspan=7,sticky = W+E+N+S)
         self.canvas.grid(column=1, row=0, rowspan=10, columnspan=9, sticky = W+E+N+S)
         self.tool_frame.grid(column=1, row=10, columnspan=9, sticky = W+E+N+S)
-        self.selected_canvas.grid(column=1, row=11, columnspan=9, rowspan=5, sticky = W+E+N+S)
-        self.selected_toolbar.grid(column=1, row=16, columnspan=9, sticky = W+E+N+S)
+        self.selected_canvas.grid(column=1, row=11, columnspan=9, rowspan=7,sticky = W+E+N+S)
+        self.selected_toolbar.grid(column=1, row=18,columnspan=9, sticky = W+E+N+S)
         self.pre_frame.grid_propagate(False)
         self.canvas.grid_propagate(False)
         self.tool_frame.grid_propagate(False)
