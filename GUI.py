@@ -175,7 +175,10 @@ class GUI:
         fig = utils.draw_selected(selected, self.input_data, self.output_df)
         canvas2 = FigureCanvasTkAgg(fig, master=self.selected_canvas)
         c = canvas2.get_tk_widget()
+        width = self.selected_canvas.winfo_width()
+        height = self.selected_canvas.winfo_height()
         c.pack(side=tk.RIGHT, expand=True, fill=BOTH)
+        c.configure(width=width, height=height)
         toolbar = NavigationToolbar2TkAgg(canvas2, self.selected_toolbar)
         toolbar.update()
 
