@@ -43,6 +43,7 @@ class GUI:
         self.pre_frame.grid_propagate(False)
         self.canvas.grid_propagate(False)
         self.tool_frame.grid_propagate(False)
+	self.selected_canvas.grid_propagate(False)
 
         self.response = IntVar()
         self.response.set(0)
@@ -140,6 +141,7 @@ class GUI:
         self.clear_frame(self.channel_frame)
         self.clear_frame(self.selected_canvas)
         self.clear_frame(self.selected_toolbar)
+
 	matplotlib.pyplot.close("all")
         done = self.output_df.update_one(self.response.get(), self.starting)
         self.starting = False
@@ -162,10 +164,13 @@ class GUI:
         for i in xrange(self.input_data.num_channels):
             self.listbox.insert(END, str(i))
         self.listbox.grid()
-        confirm_button = tk.Button(self.pre_frame, text='draw figure', command=self.draw_selected_channels)
+        confirm_button = tk.Button(self.channel_frame, text='draw figure', command=self.draw_selected_channels)
         confirm_button.grid()
     
     def draw_selected_channels(self):
+	self.clear_frame(self.selected_canvas)
+        self.clear_frame(self.selected_toolbar)
+	matplotlib.pyplot.close("all")
         selected = [int(self.listbox.get(i)) for i in self.listbox.curselection()]
         fig = utils.draw_selected(selected, self.input_data, self.output_df)
         canvas2 = FigureCanvasTkAgg(fig, master=self.selected_canvas)
