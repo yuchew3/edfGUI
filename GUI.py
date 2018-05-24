@@ -13,6 +13,7 @@ from inputData import InputData
 import utils
 
 import os.path
+import os
 import numpy as np
 
 class GUI:
@@ -20,7 +21,7 @@ class GUI:
         self.master = master
         self.input_data = None
         self.output_df = OutputDF()
-        self.flag_df = OutputDF()
+        self.flag_df = OutputDF()       # or create a new data type
 
         self.pre_frame = tk.Frame(self.master, bg='gray')
         self.info_frame = tk.Frame(self.master)
@@ -83,6 +84,7 @@ class GUI:
             l = tk.Label(self.pre_frame, text="data loaded")
             l.grid()
 
+        # prompt for response file
         res = mb.askyesno("Search for response", "Do you want to search for previous response file?")
         if res:
             response_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
@@ -93,15 +95,16 @@ class GUI:
         else:
             self.output_df = utils.find_bad(self.input_data)
 
+        # prompt for flag file
         res = mb.askyesno("Search for flag file", "Do you want to search for flag file?")
         if res:
             flag_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
                                                 title = "Select file",
                                                 filetypes = (("response files","*.response"),("all files","*.*")))
-            self.output_df = utils.load_response(response_name)
-            self.output_df.filename = response_name
-        else:
-            self.output_df = utils.find_bad(self.input_data)
+            self.flag_df = utils.load_response(flag_name)
+            self.flag_df.filename = flag_name
+        # else:     not sure what to do
+        #     self.output_df = utils.find_bad(self.input_data)
 
         self.start()
     
@@ -135,6 +138,16 @@ class GUI:
         self.display()
     
     def save(self):
+        output_filename = tkFileDialog.asksaveasfilename(initialdir = "/",title = "Save file",filetypes = (("response files","*.response"),("all files","*.*")))
+        output_dir = '/'.join(output_filename.split('/')[:-1])
+        while not os.access(output_dir, os.W_OK):
+            mb.showinfo('Warning', 'Not writable')
+            output_filename = tkFileDialog.asksaveasfilename(initialdir = "/",title = "Save file",filetypes = (("response files","*.response"),("all files","*.*")))
+            output_dir = '/'.join(output_filename.split('/')[:-1])
+
+        if len(output_filename) < 9 or output_filename[-9:] != '.response':
+            output_filename += '.response'
+        self.output_df.filename = output_filename
         self.output_df.save()
         mb.showinfo("Response saved", "Successfully saved response!")
 
@@ -220,6 +233,8 @@ class GUI:
     def quit(self):
         res = mb.askyesno("Quit", "Are you sure to quit?")
         if res:
-            self.save()
+            res = mb.askyesno("Save", "Save current response?")
+            if res:
+                self.save()
             self.master.quit()
 
