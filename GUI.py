@@ -20,6 +20,7 @@ class GUI:
         self.master = master
         self.input_data = None
         self.output_df = OutputDF()
+        self.flag_df = OutputDF()
 
         self.pre_frame = tk.Frame(self.master, bg='gray')
         self.info_frame = tk.Frame(self.master)
@@ -82,17 +83,26 @@ class GUI:
             l = tk.Label(self.pre_frame, text="data loaded")
             l.grid()
 
-        response_name = ''.join(self.master.filename.split('.')[:-1]) + ".response"
-        if os.path.isfile(response_name):
-            res = mb.askyesno("Response found", "Previous response file found, do you want to continue with the last file?")
-            if res:
-                self.output_df = utils.load_response(response_name)
-                print type(self.output_df.labels[0])
-            else:
-                self.output_df = utils.find_bad(self.input_data)
+        res = mb.askyesno("Search for response", "Do you want to search for previous response file?")
+        if res:
+            response_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
+                                                title = "Select file",
+                                                filetypes = (("response files","*.response"),("all files","*.*")))
+            self.output_df = utils.load_response(response_name)
+            self.output_df.filename = response_name
         else:
             self.output_df = utils.find_bad(self.input_data)
-        self.output_df.filename = response_name
+
+        res = mb.askyesno("Search for flag file", "Do you want to search for flag file?")
+        if res:
+            flag_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
+                                                title = "Select file",
+                                                filetypes = (("response files","*.response"),("all files","*.*")))
+            self.output_df = utils.load_response(response_name)
+            self.output_df.filename = response_name
+        else:
+            self.output_df = utils.find_bad(self.input_data)
+
         self.start()
     
     def to_start_state(self):
@@ -177,8 +187,6 @@ class GUI:
         fig = utils.draw_selected(selected, self.input_data, self.output_df)
         canvas2 = FigureCanvasTkAgg(fig, master=self.selected_canvas)
         c = canvas2.get_tk_widget()
-	print 'width = ', self.selected_width
-	print 'height = ', self.selected_height
         c.pack(side=tk.RIGHT, expand=True, fill=BOTH)
         c.configure(width=self.selected_width, height=self.selected_height)
         toolbar = NavigationToolbar2TkAgg(canvas2, self.selected_toolbar)
