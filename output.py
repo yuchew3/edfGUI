@@ -8,11 +8,12 @@ class OutputDF:
         self.labels = []
         self.now_displaying = -1
         self.filename = None
+        self.input_fn = None
     
     def save(self):
         responses = np.array(self.responses)
         labels = [np.array_str(i) for i in self.labels]
-        df = pd.DataFrame({"bad seconds" : self.bad, "response" : responses, "labels" : labels})
+        df = pd.DataFrame({"bad seconds" : self.bad, "response" : responses, "labels" : labels, "input file name" : self.filename})
         df.to_csv(self.filename, index=False)
     
     def update_one(self, r, start):

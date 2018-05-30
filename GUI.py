@@ -17,10 +17,11 @@ import os
 import numpy as np
 
 class GUI:
+
     def __init__(self, master):
         self.master = master
         self.input_data = None
-        self.output_df = OutputDF()
+        self.output_df = None #OutputDF()
         self.flag_df = OutputDF()       # or create a new data type
 
         self.pre_frame = tk.Frame(self.master, bg='gray')
@@ -63,8 +64,8 @@ class GUI:
         self.yes = Radiobutton(self.pre_frame, text='yes', variable=self.response, value=1, command=self.display)
         self.no = Radiobutton(self.pre_frame, text='no', variable=self.response, value=0, command=self.display)
 
-        self.prev = tk.Button(self.pre_frame, text='prev', command=self.prev)
-        self.nxt = tk.Button(self.pre_frame, text='next', command=self.nxt)
+        self.prevbutton = tk.Button(self.pre_frame, text='prev', command=self.prev)
+        self.nxtbutton = tk.Button(self.pre_frame, text='next', command=self.nxt)
 
         self.listbox = tk.Listbox(self.channel_frame, selectmode=MULTIPLE, height=2)
 
@@ -126,8 +127,10 @@ class GUI:
         self.no.grid()
         self.master.bind('<y>', self.display_event)
         self.master.bind('<n>', self.display_event)
-        self.prev.grid()
-        self.nxt.grid()
+        self.master.bind('<Left>', self.prevkey)
+        self.master.bind('<Right>', self.nextkey)
+        self.prevbutton.grid()
+        self.nxtbutton.grid()
         self.display()
     
     def display_event(self, event):
@@ -217,7 +220,12 @@ class GUI:
             label = tk.Label(self.info_frame, text=st)
             label.grid()
 
-    
+    def nextkey(self, event):
+        self.nxt()
+
+    def prevkey(self, event):
+        self.prev()
+
     def prev(self):
         self.starting = True
         self.output_df.now_displaying -= 2
