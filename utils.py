@@ -5,6 +5,7 @@ import utils
 import pyedflib
 import numpy as np
 import pandas as pd
+import math
 import matplotlib
 import matplotlib.pyplot as plt
 import types
@@ -90,18 +91,24 @@ def draw_selected(selected, input_data, output_df):
     t_idx = np.arange(lo, hi)
     X = range(lo, hi)
     X=[i*1.0/frequency for i in X]
-    amp_scale = 3.5
+    # amp_scale = 3.5
 
     fig, ax1 = plt.subplots(1, 1, subplot_kw=dict(projection="X_Pan_Axes"))
     fig = constrainXPanZoomBehavior(fig)
     i = 1
     for chan in selected:
+        variance = np.var(input_data.sigbuf[chan, t_idx])
+        print variance
+        variance = 7.0 / (1 + math.exp(-variance))
+        print variance
         height = (i*1.0 / (len(selected)+1)) * input_data.num_channels
-        ax1.plot(X, height*10 + amp_scale * input_data.sigbuf[chan, t_idx].T,
+        ax1.plot(X, height*10 + variance * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)
     	i += 1
     ax1.set_ylim(-10, (input_data.num_channels+1)*10)
     ax1.set_xlim(X[0], X[-1])
+    ax1.set_xlabel("time (s)")
+    ax1.set_yticklabels([])
     for x in vlines:
         ax1.axvline(x=x, ls='--', color='k')
 
@@ -123,6 +130,7 @@ def draw_figure(input_data, output_df):
     t_idx = np.arange(lo, hi)
     X = range(lo, hi)
     X=[i*1.0/frequency for i in X]
+
     bad_channels = np.where(output_df.channels[output_df.now_displaying])[0]
     print bad_channels
     amp_scale = 3.5
@@ -135,16 +143,29 @@ def draw_figure(input_data, output_df):
     # fig.set_size_inches(float(width*0.8)/DPI, float(height*0.8)/DPI)
     fig = constrainXPanZoomBehavior(fig)
     for chan in xrange(input_data.num_channels):
-        ax1.plot(X, chan*10 + amp_scale * input_data.sigbuf[chan, t_idx].T,
+        variance = np.var(input_data.sigbuf[chan, t_idx])
+        print variance
+        variance = 5.0 / (1 + math.exp(-variance))
+        print variance
+        ax1.plot(X, chan*10 + variance * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)
+    # amp_scale = amp_scale * input_data.num_channels / (len(bad_channels)+1)
+    amp_scale = 7.0
     i = 1
     for chan in bad_channels:
+        variance = np.var(input_data.sigbuf[chan, t_idx])
+        print variance
+        variance = 7.0 / (1 + math.exp(-variance))
+        print variance
         height = (i*1.0 / (len(bad_channels)+1)) * input_data.num_channels
-        ax2.plot(X, height*10 + amp_scale * input_data.sigbuf[chan, t_idx].T,
+        ax2.plot(X, height*10 + variance * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)
         i += 1
     ax1.set_ylim(-10, (input_data.num_channels+1)*10)
     ax2.set_ylim(-10, (input_data.num_channels+1)*10)
+    ax2.set_xlabel('time (s)')
+    ax1.set_yticklabels([])
+    ax2.set_yticklabels([])
     ax1.set_xlim(X[0], X[-1])
     for x in vlines:
         ax1.axvline(x=x, ls='--', color='k')
@@ -152,4 +173,22 @@ def draw_figure(input_data, output_df):
 
     return fig
 
+def draw(input_data, output_df, selected=None):
+    i = output_df.bad[output_df.now_displaying]
+    vlines = [i, i+1]
+    margin = 0.2
+    frequency = input_data.frequency
+    lo = i*frequency - margin*frequency
+    if lo < 0:
+        lo = 0
+    hi = (i+1)*frequency + margin*frequency
+    if hi > input_data.length:
+        hi = input_data.length
+    lo = int(lo)
+    hi = int(hi)
+    t_idx = np.arange(lo, hi)
+    X = range(lo, hi)
+    X=[i*1.0/frequency for i in X]
 
+    if selected == None:
+        selected = np.where(output_df.channels[output_df.now_displaying])[0]
