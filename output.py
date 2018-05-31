@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 
 class OutputDF:
     def __init__(self):
@@ -13,8 +14,10 @@ class OutputDF:
     def save(self):
         responses = np.array(self.responses)
         labels = [np.array_str(i) for i in self.labels]
-        df = pd.DataFrame({"bad seconds" : self.bad, "response" : responses, "labels" : labels, "input file name" : self.filename})
-        df.to_csv(self.filename, index=False)
+        df = pd.DataFrame({"bad seconds" : self.bad, "response" : responses, "labels" : labels})
+        a = {'filename': self.input_fn, 'df': df}
+        # df.to_csv(self.filename, index=False)
+        pickle.dump(a, open(self.filename, 'wb'))
     
     def update_one(self, r, start):
         if not start:

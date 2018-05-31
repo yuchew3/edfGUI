@@ -9,6 +9,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import types
 import h5py
+import pickle
 
 def load_file(filename):
     if filename[-3:] == '.h5':
@@ -44,10 +45,18 @@ def load_h5_file(filename):
     input_data.length = len(input_data.sigbuf[0])
     return input_data
 
-def load_response(response_name):
-    output_df = OutputDF()
-    y = pd.read_csv(response_name)
+def load_response(response_name, input_fn):
+    # y = pd.read_csv(response_name)
+    y = pickle.load( open(response_name, 'rb') )
+    if not y['filename'] == input_fn:
+        return None
+    print y['filename']
+    y = y['df']
+    # y = y['df']
 
+    output_df = OutputDF()
+    output_df.filename = response_name
+    output_df.input_fn = input_fn
     output_df.bad = y['bad seconds'].values
     print output_df.bad.shape
     output_df.responses = y['response'].values

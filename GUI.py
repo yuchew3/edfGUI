@@ -87,13 +87,16 @@ class GUI:
 
         # prompt for response file
         res = mb.askyesno("Search for response", "Do you want to search for previous response file?")
-        if res:
+        while res == 1:
             response_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
                                                 title = "Select file",
                                                 filetypes = (("response files","*.response"),("all files","*.*")))
-            self.output_df = utils.load_response(response_name)
-            self.output_df.filename = response_name
-        else:
+            self.output_df = utils.load_response(response_name, self.master.filename)
+            if self.output_df == None:
+                res = mb.askyesno("Fail", "Load response file failed. Try again?")
+            else:
+                res = -1
+        if res == 0:
             self.output_df = utils.find_bad(self.input_data)
 
         # prompt for flag file
