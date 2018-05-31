@@ -76,8 +76,9 @@ def load_response(response_name, input_fn):
 
     return output_df
 
-def find_bad(input_data):
+def find_bad(input_data, input_fn):
     output_df = OutputDF()
+    output_df.input_fn = input_fn
     seconds = input_data.length / input_data.frequency
     if input_data.length%input_data.frequency != 0:
         seconds += 1

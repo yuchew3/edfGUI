@@ -97,7 +97,7 @@ class GUI:
             else:
                 res = -1
         if res == 0:
-            self.output_df = utils.find_bad(self.input_data)
+            self.output_df = utils.find_bad(self.input_data, self.master.filename)
 
         # prompt for flag file
         res = mb.askyesno("Search for flag file", "Do you want to search for flag file?")
