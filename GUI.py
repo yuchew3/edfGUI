@@ -10,6 +10,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 
 from output import OutputDF
 from inputData import InputData
+from flag import FlagDF
 import utils
 
 import os.path
@@ -21,8 +22,8 @@ class GUI:
     def __init__(self, master):
         self.master = master
         self.input_data = None
-        self.output_df = None #OutputDF()
-        self.flag_df = OutputDF()       # or create a new data type
+        self.output_df = OutputDF()      # OutputDF()
+        self.flag_df = FlagDF()         # or create a new data type
 
         self.pre_frame = tk.Frame(self.master, bg='gray')
         self.info_frame = tk.Frame(self.master)
@@ -84,6 +85,19 @@ class GUI:
             self.to_start_state()
             l = tk.Label(self.pre_frame, text="data loaded")
             l.grid()
+        
+        # prompt for flag file
+        res = mb.askyesno("Search for flag file", "Do you want to search for flag file?")
+        found_flag = False
+        while res == 1:
+            flag_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
+                                                title = "Select file",
+                                                filetypes = (("response files","*.response"),("all files","*.*")))
+            self.flag_df.load_from_file(flag_name, self.master.filename)
+            if self.flag_df.filename == None:
+                res = mb.askyesno("Fail", "Load flag file failed. Try again?")
+            else:
+                found_flag = True
 
         # prompt for response file
         res = mb.askyesno("Search for response", "Do you want to search for previous response file?")
@@ -91,24 +105,18 @@ class GUI:
             response_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
                                                 title = "Select file",
                                                 filetypes = (("response files","*.response"),("all files","*.*")))
-            self.output_df = utils.load_response(response_name, self.master.filename)
-            if self.output_df == None:
+            self.output_df.load_response(response_name, self.master.filename, self.flag_df.filename)
+            print self.output_df.responses
+            if self.output_df.filename == None:
                 res = mb.askyesno("Fail", "Load response file failed. Try again?")
             else:
                 res = -1
-        if res == 0:
-            self.output_df = utils.find_bad(self.input_data, self.master.filename)
+        if res == 0:    # no response file, create one base on either default criterion or flag file
+            if found_flag:
+                self.output_df.create_on_flag(self.flag_df)
+            else:
+                self.output_df.create_on_input(self.input_data, self.master.filename)
 
-        # prompt for flag file
-        res = mb.askyesno("Search for flag file", "Do you want to search for flag file?")
-        if res:
-            flag_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
-                                                title = "Select file",
-                                                filetypes = (("response files","*.response"),("all files","*.*")))
-            self.flag_df = utils.load_response(flag_name)
-            self.flag_df.filename = flag_name
-        # else:     not sure what to do
-        #     self.output_df = utils.find_bad(self.input_data)
 
         self.start()
     
@@ -215,7 +223,7 @@ class GUI:
     def display_bad_labels(self):
         l = tk.Label(self.info_frame, text="bad labels:")
         l.grid()
-        bad_channels = np.where(self.output_df.labels[self.output_df.now_displaying])[0]
+        bad_channels = np.where(self.output_df.channels[self.output_df.now_displaying])[0]
         for chan in bad_channels:
             st = str(chan)
             if (self.input_data.labels != None):

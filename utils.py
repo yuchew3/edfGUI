@@ -45,67 +45,6 @@ def load_h5_file(filename):
     input_data.length = len(input_data.sigbuf[0])
     return input_data
 
-def load_response(response_name, input_fn):
-    # y = pd.read_csv(response_name)
-    y = pickle.load( open(response_name, 'rb') )
-    if not y['filename'] == input_fn:
-        print y['filename']
-        print input_fn
-        return None
-    print y['filename']
-    y = y['df']
-    # y = y['df']
-
-    output_df = OutputDF()
-    output_df.filename = response_name
-    output_df.input_fn = input_fn
-    output_df.bad = y['bad seconds'].values
-    print output_df.bad.shape
-    output_df.responses = y['response'].values
-    print output_df.responses.shape
-    output_df.labels = y['labels'].values
-    output_df.labels = [np.fromstring(n[1:-1], sep=' ') for n in output_df.labels]
-    output_df.labels = np.array(output_df.labels)
-    print output_df.labels.shape
-    n = 0
-    try:
-        n = output_df.responses.tolist().index(-1)
-    except ValueError:
-        n = 0
-    output_df.now_displaying = n - 1   # is there better way?
-
-    return output_df
-
-def find_bad(input_data, input_fn):
-    output_df = OutputDF()
-    output_df.input_fn = input_fn
-    seconds = input_data.length / input_data.frequency
-    if input_data.length%input_data.frequency != 0:
-        seconds += 1
-    seconds = int(seconds)
-    print seconds, ' seconds in total'
-
-    outlier_points = np.abs(input_data.sigbuf) > 5
-
-    def check_bad(i, outlier_points):
-        lo = int(i * input_data.frequency)
-        hi = int(lo + input_data.frequency)
-        if hi > input_data.length:
-            hi = input_data.length
-        labels = np.zeros(input_data.num_channels)
-	t_idx = np.arange(lo, hi)
-	return np.sum(outlier_points[:, t_idx], axis=1) > 0.2 * input_data.frequency
-
-    y = np.zeros((seconds, input_data.num_channels))
-    for i in xrange(seconds):
-        y[i, :] = check_bad(i, outlier_points)
-        if np.sum(y[i, :]) > 0:
-            output_df.bad.append(i)
-            output_df.labels.append(y[i, :])
-
-    output_df.responses = -np.ones(len(output_df.bad))
-    return output_df
-
 class X_Pan_Axes(matplotlib.axes.Axes):
     name = "X_Pan_Axes"
     def drag_pan(self, button, key, x, y):
@@ -184,7 +123,7 @@ def draw_figure(input_data, output_df):
     t_idx = np.arange(lo, hi)
     X = range(lo, hi)
     X=[i*1.0/frequency for i in X]
-    bad_channels = np.where(output_df.labels[output_df.now_displaying])[0]
+    bad_channels = np.where(output_df.channels[output_df.now_displaying])[0]
     print bad_channels
     amp_scale = 3.5
     
