@@ -33,6 +33,7 @@ class GUI:
         self.selected_canvas = tk.Frame(self.master)
         self.selected_toolbar = tk.Frame(self.master)
 
+        # set proportions for each frame
         for r in range(19):
             self.master.rowconfigure(r, weight=1)    
         for c in range(10):
@@ -51,9 +52,11 @@ class GUI:
 	self.selected_width = self.selected_canvas.winfo_width()+5
 	self.selected_height = self.selected_canvas.winfo_height()+5
 
+        # store the current response
         self.response = IntVar()
         self.response.set(0)
 
+        # initiate all buttons
         self.choose_file_button = tk.Button(self.pre_frame, text="choose file", command=self.load_file)
         self.save_button = tk.Button(self.pre_frame, text='save', command=self.save)
         self.quit_button = tk.Button(self.pre_frame, text='quit', command=self.quit)

@@ -1,7 +1,7 @@
 import numpy as np
-import pandas as pd
 import pickle
 
+# store response information
 class OutputDF:
     def __init__(self):
         self.bad = []
@@ -12,10 +12,12 @@ class OutputDF:
         self.input_fn = None
         self.flag_fn = None
     
+    # save current resposnes to a pickle file (*.response)
     def save(self):
         a = {'input_fn': self.input_fn, 'flag_fn':self.flag_fn, 'bad':self.bad, 'responses':self.responses, 'channels':self.channels}
         pickle.dump(a, open(self.filename, 'wb'))
     
+    # update one response for the "now_displaying th" data
     def update_one(self, r, start):
         if not start:
             self.responses[self.now_displaying] = r
@@ -25,8 +27,11 @@ class OutputDF:
             return True
         return False
 
+    # load from a response file
     def load_response(self, response_name, input_fn, flag_fn=None):
         y = pickle.load( open(response_name, 'rb') )
+        # if the response file is not the one corresponding to the input file or flag file
+        # just leave everything None
         if y['input_fn'] != input_fn or y['flag_fn'] != flag_fn:
             print y['input_fn']
             print input_fn
@@ -38,6 +43,8 @@ class OutputDF:
         self.bad = y['bad']
         self.responses = y['responses']
         self.channels = y['channels']
+
+        # find the first -1 (i.e. not answered) in responses
         n = 0
         try:
             n = self.responses.tolist().index(-1)
@@ -45,6 +52,7 @@ class OutputDF:
             n = 0
         self.now_displaying = n - 1   # is there better way?
     
+    # create a new response file based on a given flag file
     def create_on_flag(self, flag_df):
         self.input_fn = flag_df.input_fn
         self.flag_fn = flag_df.filename
@@ -52,6 +60,7 @@ class OutputDF:
         self.responses = -1 * np.ones(len(self.bad))
         self.channels = flag_df.channels
     
+    # create a new response file based on the input data and some criteria
     def create_on_input(self, input_data, input_fn):
         self.input_fn = input_fn
         seconds = input_data.length / input_data.frequency
@@ -62,6 +71,7 @@ class OutputDF:
 
         outlier_points = np.abs(input_data.sigbuf) > 5
 
+        # check if one point is an outlier
         def check_bad(i, outlier_points):
             lo = int(i * input_data.frequency)
             hi = int(lo + input_data.frequency)

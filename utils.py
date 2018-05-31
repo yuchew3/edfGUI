@@ -12,6 +12,7 @@ import types
 import h5py
 import pickle
 
+# load data from edf file
 def load_file(filename):
     if filename[-3:] == '.h5':
         print "h5 file!"
@@ -36,6 +37,7 @@ def load_file(filename):
     
     return input_data
 
+# load data from h5 file
 def load_h5_file(filename):
     fin = h5py.File(filename, 'r')
 

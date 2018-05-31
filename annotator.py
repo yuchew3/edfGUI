@@ -7,7 +7,7 @@ from Tkinter import *
 def main():
     root = tk.Tk()
     root.title("Test")
-    root.geometry('1024x960')
+    root.geometry('1024x960')   # change the size of window here
 
     gui = GUI(root)
     root.mainloop()
