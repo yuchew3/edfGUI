@@ -49,6 +49,8 @@ def load_response(response_name, input_fn):
     # y = pd.read_csv(response_name)
     y = pickle.load( open(response_name, 'rb') )
     if not y['filename'] == input_fn:
+        print y['filename']
+        print input_fn
         return None
     print y['filename']
     y = y['df']
