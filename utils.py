@@ -157,7 +157,7 @@ def draw_figure(input_data, output_df):
     for chan in bad_channels:
         variance = np.var(input_data.sigbuf[chan, t_idx])
         print variance
-        variance = 7.0 / (1 + math.exp(-variance))
+        variance = 12.0 / (1 + math.exp(-variance))
         print variance
         height = (i*1.0 / (len(bad_channels)+1)) * input_data.num_channels
         ax2.plot(X, height*10 + variance * input_data.sigbuf[chan, t_idx].T,
