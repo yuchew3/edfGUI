@@ -159,8 +159,8 @@ def draw_figure(input_data, output_df):
         print variance
         variance = 12.0 / (1 + math.exp(-variance))
         print variance
-        height = (i*1.0 / (len(bad_channels)+1)) * input_data.num_channels
-        ax2.plot(X, height*10 + 10 * input_data.sigbuf[chan, t_idx].T,
+        # height = (i*1.0 / (len(bad_channels)+1)) * input_data.num_channels
+        ax2.plot(X, i*10 + 10 * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)
         i += 1
     ax1.set_ylim(-10, (input_data.num_channels+1)*10)
