@@ -190,7 +190,7 @@ class GUI:
         self.starting = False
         if done:
             mb.showinfo("All done!", "Good job!")
-            self.to_start_state()
+            # self.to_start_state()
             return
         fig = utils.draw_figure(self.input_data, self.output_df)
         canvas2 = FigureCanvasTkAgg(fig, master=self.canvas)
