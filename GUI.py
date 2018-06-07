@@ -95,12 +95,13 @@ class GUI:
         while res == 1:
             flag_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
                                                 title = "Select file",
-                                                filetypes = (("response files","*.response"),("all files","*.*")))
+                                                filetypes = (("response files","*.flag"),("all files","*.*")))
             self.flag_df.load_from_file(flag_name, self.master.filename)
             if self.flag_df.filename == None:
                 res = mb.askyesno("Fail", "Load flag file failed. Try again?")
             else:
                 found_flag = True
+                res = -1
 
         # prompt for response file
         res = mb.askyesno("Search for response", "Do you want to search for previous response file?")

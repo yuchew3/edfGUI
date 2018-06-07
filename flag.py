@@ -16,9 +16,11 @@ class FlagDF:
         pickle.dump(s, open(self.filename, 'wb'))
     
     # load a flag data frame from a flag file
-    def load_from_file(filename, input_fn):
+    def load_from_file(self, filename, input_fn):
         f = pickle.load( open(filename, 'rb') )
         if f['input_fn'] != input_fn:
+            print 'input_fn is ', f['input_fn']
+            print input_fn
             return
 
         self.filename = filename
