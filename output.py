@@ -33,8 +33,8 @@ class OutputDF:
         # if the response file is not the one corresponding to the input file or flag file
         # just leave everything None
         if y['input_fn'] != input_fn or y['flag_fn'] != flag_fn:
-            print y['input_fn']
-            print input_fn
+            print(y['input_fn'])
+            print(input_fn)
             return
 
         self.filename = response_name
@@ -67,7 +67,7 @@ class OutputDF:
         if input_data.length%input_data.frequency != 0:
             seconds += 1
         seconds = int(seconds)
-        print seconds, ' seconds in total'
+        print(seconds, ' seconds in total')
 
         outlier_points = np.abs(input_data.sigbuf) > 5
 

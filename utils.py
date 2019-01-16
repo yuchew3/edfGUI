@@ -15,7 +15,7 @@ import pickle
 # load data from edf file
 def load_file(filename):
     if filename[-3:] == '.h5':
-        print "h5 file!"
+        print("h5 file!")
         return load_h5_file(filename)
     try:
         f = pyedflib.EdfReader(filename)
@@ -100,13 +100,13 @@ def draw_selected(selected, input_data, output_df):
     i = 1
     for chan in selected:
         variance = np.var(input_data.sigbuf[chan, t_idx])
-        print variance
+        print(variance)
         variance = 7.0 / (1 + math.exp(-variance))
-        print variance
+        print(variance)
         height = (i*1.0 / (len(selected)+1)) * input_data.num_channels
         ax1.plot(X, height*10 + variance * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)
-    	i += 1
+        i += 1
     ax1.set_ylim(-10, (input_data.num_channels+1)*10)
     ax1.set_xlim(X[0], X[-1])
     ax1.set_xlabel("time (s)")
@@ -134,7 +134,7 @@ def draw_figure(input_data, output_df):
     X=[i*1.0/frequency for i in X]
 
     bad_channels = np.where(output_df.channels[output_df.now_displaying])[0]
-    print bad_channels
+    print(bad_channels)
     amp_scale = 3.5
     
     
@@ -146,9 +146,9 @@ def draw_figure(input_data, output_df):
     fig = constrainXPanZoomBehavior(fig)
     for chan in xrange(input_data.num_channels):
         variance = np.var(input_data.sigbuf[chan, t_idx])
-        print variance
+        print(variance)
         variance = 5.0 / (1 + math.exp(-variance))
-        print variance
+        print(variance)
         ax1.plot(X, chan*10 + 10 * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)
     # amp_scale = amp_scale * input_data.num_channels / (len(bad_channels)+1)
@@ -156,9 +156,9 @@ def draw_figure(input_data, output_df):
     i = 1
     for chan in bad_channels:
         variance = np.var(input_data.sigbuf[chan, t_idx])
-        print variance
+        print(variance)
         variance = 12.0 / (1 + math.exp(-variance))
-        print variance
+        print(variance)
         # height = (i*1.0 / (len(bad_channels)+1)) * input_data.num_channels
         ax2.plot(X, i*10 + 10 * input_data.sigbuf[chan, t_idx].T,
                              lw=0.5)

@@ -1,8 +1,8 @@
 from GUI import GUI
 from output import OutputDF
 from inputData import InputData
-import Tkinter as tk
-from Tkinter import *
+import tkinter as tk
+from tkinter import *
 
 def main():
     root = tk.Tk()

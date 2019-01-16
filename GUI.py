@@ -1,7 +1,7 @@
-import Tkinter as tk
-from Tkinter import *
-import tkMessageBox as mb
-import tkFileDialog
+import tkinter as tk
+from tkinter import *
+from tkinter import messagebox as mb
+from tkinter import filedialog
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.backends.tkagg as tkagg
@@ -48,9 +48,9 @@ class GUI:
         self.pre_frame.grid_propagate(False)
         self.canvas.grid_propagate(False)
         self.tool_frame.grid_propagate(False)
-	self.selected_canvas.grid_propagate(False)
-	self.selected_width = self.selected_canvas.winfo_width()+5
-	self.selected_height = self.selected_canvas.winfo_height()+5
+        self.selected_canvas.grid_propagate(False)
+        self.selected_width = self.selected_canvas.winfo_width()+5
+        self.selected_height = self.selected_canvas.winfo_height()+5
 
         # store the current response
         self.response = IntVar()
@@ -76,11 +76,11 @@ class GUI:
         self.starting = False
 
     def load_file(self):
-        self.master.filename = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
+        self.master.filename = filedialog.askopenfilename(initialdir = "~/Desktop/Research",
                                                 title = "Select file",
                                                 filetypes = (("edf files","*.edf"),("h5py files", "*.h5"),("all files","*.*")))
         self.input_data = utils.load_file(self.master.filename)
-        print self.master.filename
+        print(self.master.filename)
         if self.input_data == None:
             mb.showerror("Error", "File not found!")
             return
@@ -93,9 +93,11 @@ class GUI:
         res = mb.askyesno("Search for flag file", "Do you want to search for flag file?")
         found_flag = False
         while res == 1:
-            flag_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
+            flag_name = filedialog.askopenfilename(initialdir = "~/Desktop/Research",
                                                 title = "Select file",
                                                 filetypes = (("response files","*.flag"),("all files","*.*")))
+            if file_name == '': 
+                res = -1
             self.flag_df.load_from_file(flag_name, self.master.filename)
             if self.flag_df.filename == None:
                 res = mb.askyesno("Fail", "Load flag file failed. Try again?")
@@ -106,11 +108,11 @@ class GUI:
         # prompt for response file
         res = mb.askyesno("Search for response", "Do you want to search for previous response file?")
         while res == 1:
-            response_name = tkFileDialog.askopenfilename(initialdir = "~/Desktop/Research",
+            response_name = filedialog.askopenfilename(initialdir = "~/Desktop/Research",
                                                 title = "Select file",
                                                 filetypes = (("response files","*.response"),("all files","*.*")))
             self.output_df.load_response(response_name, self.master.filename, self.flag_df.filename)
-            print self.output_df.responses
+            print(self.output_df.responses)
             if self.output_df.filename == None:
                 res = mb.askyesno("Fail", "Load response file failed. Try again?")
             else:
@@ -125,7 +127,7 @@ class GUI:
         self.start()
     
     def to_start_state(self):
-        print "start to_start_state"
+        print("start to_start_state")
         self.unpack_frame(self.pre_frame)
         self.clear_frame(self.canvas)
         self.clear_frame(self.tool_frame)
@@ -133,7 +135,7 @@ class GUI:
         self.choose_file_button.grid()
         self.save_button.grid()
         self.quit_button.grid()
-        print "end to_start_state"
+        print("end to_start_state")
 
 
     def start(self):
@@ -156,11 +158,11 @@ class GUI:
         self.display()
     
     def save(self):
-        output_filename = tkFileDialog.asksaveasfilename(initialdir = "/",title = "Save file",filetypes = (("response files","*.response"),("all files","*.*")))
+        output_filename = filedialog.asksaveasfilename(initialdir = "/",title = "Save file",filetypes = (("response files","*.response"),("all files","*.*")))
         output_dir = '/'.join(output_filename.split('/')[:-1])
         while not os.access(output_dir, os.W_OK):
             mb.showinfo('Warning', 'Not writable')
-            output_filename = tkFileDialog.asksaveasfilename(initialdir = "/",title = "Save file",filetypes = (("response files","*.response"),("all files","*.*")))
+            output_filename = filedialog.asksaveasfilename(initialdir = "/",title = "Save file",filetypes = (("response files","*.response"),("all files","*.*")))
             output_dir = '/'.join(output_filename.split('/')[:-1])
 
         if len(output_filename) < 9 or output_filename[-9:] != '.response':
@@ -185,7 +187,7 @@ class GUI:
         self.clear_frame(self.selected_canvas)
         self.clear_frame(self.selected_toolbar)
 
-	matplotlib.pyplot.close("all")
+        matplotlib.pyplot.close("all")
         done = self.output_df.update_one(self.response.get(), self.starting)
         self.starting = False
         if done:
@@ -211,9 +213,9 @@ class GUI:
         confirm_button.grid()
     
     def draw_selected_channels(self):
-	self.clear_frame(self.selected_canvas)
+        self.clear_frame(self.selected_canvas)
         self.clear_frame(self.selected_toolbar)
-	matplotlib.pyplot.close("all")
+        matplotlib.pyplot.close("all")
         selected = [int(self.listbox.get(i)) for i in self.listbox.curselection()]
         fig = utils.draw_selected(selected, self.input_data, self.output_df)
         canvas2 = FigureCanvasTkAgg(fig, master=self.selected_canvas)
